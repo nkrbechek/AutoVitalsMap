@@ -1,0 +1,176 @@
+<!DOCTYPE html>
+<html>
+<head>
+<link rel="stylesheet" type="text/css" href="mapTesting.css">
+<script
+src="http://maps.googleapis.com/maps/api/js">
+</script>
+<script src="http://ajax.googleapis.com/ajax/libs/jquery/1.9.1/jquery.min.js"></script>
+</head>
+<body>
+	<div id="text" sytle="padding:10px;"></div>
+	<div id="container">
+    <div id="map" style="width: 1000px; height: 800px;"></div>
+	<div id="wrapper">
+	<div id="slide-body">
+<ul>
+    <li><input type="checkbox" id="select_all"/> Selecct All</li>
+    <li><input class="checkbox" type="checkbox" name="check[]"> This is Item 1</li>
+    <li><input class="checkbox" type="checkbox" name="check[]"> This is Item 2</li>
+    <li><input class="checkbox" type="checkbox" name="check[]"> This is Item 3</li>
+    <li><input class="checkbox" type="checkbox" name="check[]"> This is Item 4</li>
+    <li><input class="checkbox" type="checkbox" name="check[]"> This is Item 5</li>
+    <li><input class="checkbox" type="checkbox" name="check[]"> This is Item 6</li>
+    
+    <li><input class="shoptype" type="checkbox"  id="select_all_shop"/> Selecct All Shop Types</li>
+    <li><input class="shoptype" type="checkbox" name="check[]"> This is shop type 1</li>
+    <li><input class="shoptype" type="checkbox" name="check[]"> This is shop type 2</li>
+    <li><input class="shoptype" type="checkbox" name="check[]"> This is shop type 3</li>
+    <li><input class="shoptype" type="checkbox" name="check[]"> This is shop type 4</li>
+    <li><input class="shoptype" type="checkbox" name="check[]"> This is shop type 5</li>
+    <li><input class="shoptype" type="checkbox" name="check[]"> This is shop type 6</li>
+</ul>
+ </div>
+<div id="more" >Select Shops Displayed</div>
+</div>
+</div>
+</body>
+</html>
+
+<script>
+var locations = [
+    [
+        "Advanced Automotive Performance", //name of shop
+    42.0630529, -71.6701205, // shop log/lat
+        "Jason Malo", //Main contact
+        "Elite/Tier1",//shop Tier
+        "680A Douglas St.",//address
+        "TopFuel"],//web Presence
+    [
+        "Ledoux's Auto Service & Repair",
+    44.8994296, -123.0382659,
+        "Gary  LeDoux",
+        "Tier2",
+        "3924 Commercial St SE",
+        "Unknown"],
+    [
+        "Kwik Kar Auto Service & Repair",
+    32.7731459, -97.08196,
+        "Casey Stump",
+        "Tier2",
+        "1820 Brown Boulevard",
+        "Legacy"],
+    [
+        "Milstead Service Center",
+    30.3827302, -95.3834854,
+        "Mark Milstead",
+        "Tier2",
+        "2416 North Frazier",
+        "Legacy"],
+    [
+        "Rod's Japanese Auto Care",
+    48.8327515, -122.4848332,
+        "Rod Schindler",
+        "Tier1",
+        "5292 Guide Meridian",
+        "ProStock"]
+];
+var markers = [];
+var map;
+
+function initialize() {
+    map = new google.maps.Map(document.getElementById('map'), {
+        zoom: 3,
+        // center: new google.maps.LatLng(-33.92, 151.25),
+        center: new google.maps.LatLng(41.850033, -87.6500523),
+        mapTypeId: google.maps.MapTypeId.ROADMAP
+    });
+	
+	var pinIcon = new google.maps.MarkerImage(
+    "http://www.clker.com/cliparts/N/a/G/A/e/V/map-marker-th.png",
+    null, /* size is determined at runtime */
+    null, /* origin is 0,0 */
+    null, /* anchor is bottom center of the scaled image */
+    new google.maps.Size(20, 30)
+);
+    var infowindow = new google.maps.InfoWindow();
+    var iconBase = 'http://www.clker.com/cliparts/b/7/6/5/1308001441853739087google maps pin.svg.thumb.png';
+    var marker, i;
+	
+    for (i = 0; i < locations.length; i++) {
+        marker = new google.maps.Marker({
+            position: new google.maps.LatLng(locations[i][1],  locations[i][2]),
+            map: map,
+           // icon: iconBase 
+        });
+
+        google.maps.event.addListener(marker, 'click', (function (marker, i) {
+            return function () {
+                infowindow.setContent("<b>Shop Name: </b>"+locations[i][0] +"</br><b>Address: </b>"+ locations[i][5] +"</br><b>Main Contact: </b>" + locations[i][3]+"</br><b>Shop Tier: </b>" + locations[i][4]+"</br><b>Web Presence: </b>" + locations[i][6]);
+                infowindow.open(map, marker);
+                var count = 0; 
+                for (var j = 0; j < markers.length; j++) {
+					if(locations[i][3] == locations[j][3] || locations[i][4] == locations[j][4] ||locations[i][6] == locations[j][6]){
+						count = count +1; 
+						markers[j].setIcon("http://maps.google.com/mapfiles/ms/icons/red-dot.png");
+					}
+					else{
+						markers[j].setIcon(pinIcon);
+					}
+                }
+                marker.setIcon("http://maps.google.com/mapfiles/ms/icons/green-dot.png");
+				document.getElementById("text").innerHTML = "Similar Shops: " + count;
+
+            };
+        })(marker, i));
+        markers.push(marker);
+
+    }
+}
+google.maps.event.addDomListener(window, 'load', initialize);
+
+//For the settings div
+document.getElementById( 'more' ).addEventListener( 'click', function() {
+    var body = document.getElementById( 'slide-body' );
+    if( body.className == 'expanded' ) {
+        body.className = '';
+        document.getElementById( 'more' ).textContent = 'Select Shops Displayed';
+    } else {
+        body.className = 'expanded';
+        document.getElementById( 'more' ).textContent = 'hide';
+    };
+} );
+//Checkboxes
+//select all checkboxes
+$("#select_all").change(function(){  //"select all" change 
+    $(".checkbox").prop('checked', $(this).prop("checked")); //change all ".checkbox" checked status
+    $(".shoptype").prop('checked', $(this).prop("checked")); //change all ".checkbox" checked status
+});
+$("#select_all_shop").change(function(){  //"select all" change 
+    $(".shoptype").prop('checked', $(this).prop("checked")); //change all ".checkbox" checked status
+    $(".shoptype").prop('checked', $(this).prop("checked")); //change all ".checkbox" checked status
+});
+//".checkbox" change 
+$('.checkbox').change(function(){ 
+    //uncheck "select all", if one of the listed checkbox item is unchecked
+    if(false == $(this).prop("checked")){ //if this item is unchecked
+        $("#select_all").prop('checked', false); //change "select all" checked status to false
+    }
+    //check "select all" if all checkbox items are checked
+    if ($('.checkbox:checked').length == $('.checkbox').length ){
+        $("#select_all").prop('checked', true);
+    }
+});
+$('.shoptype').change(function(){ 
+    //uncheck "select all", if one of the listed checkbox item is unchecked
+    if(false == $(this).prop("checked")){ //if this item is unchecked
+        $("#select_all").prop('checked', false); //change "select all" checked status to false
+         $("#select_all_shop").prop('checked', false); //change "select all" checked status to false
+    }
+    //check "select all" if all checkbox items are checked
+    if ($('.shoptype:checked').length == $('.shoptype').length ){
+        $("#select_all_shop").prop('checked', true);
+    }
+});
+
+</script>

@@ -1,0 +1,30 @@
+#container{
+	width:100%;
+	}
+#wrapper {
+border:1px solid #dfdfdf;
+margin-left:20px;
+float: left;
+width:15%;
+}
+ul li {list-style:none;}
+#map{
+width:70%;
+float: left;
+}
+#slide-body{
+    height: 55px;    
+    overflow: hidden;
+    transition:             height 500ms ease;
+        -moz-transition:    height 500ms ease;
+        -ms-transition:     height 500ms ease;
+        -o-transition:      height 500ms ease;
+        -webkit-transition: height 500ms ease;
+}
+.expanded {
+    height: 400px !important;
+}
+#more {    
+    cursor: pointer;
+    text-align: center;
+}
